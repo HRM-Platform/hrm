@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register_dto';
-import { identity } from 'rxjs';
+import { identity, retry } from 'rxjs';
 import { instanceToPlain, plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -72,8 +72,11 @@ export class AuthService {
     }
 
     return {
-      message: 'User profile information',
-      data: instanceToPlain(user),
+      user: instanceToPlain(user),
     };
+  }
+
+  async listUsers() {
+    return await this.usersRepo.find();
   }
 }

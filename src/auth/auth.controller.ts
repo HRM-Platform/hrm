@@ -23,6 +23,11 @@ export class AuthController {
 
   @Get('/profile')
   async getProfile(@CurrentUser('sub') userId: number) {
-    return this.authService.getProfile(userId);
+    return await this.authService.getProfile(userId);
+  }
+
+  @Get('/list-users')
+  async listUsers() {
+    return this.authService.listUsers();
   }
 }
