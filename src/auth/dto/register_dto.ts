@@ -13,9 +13,9 @@ export class RegisterDto {
 
   @ApiProperty({ example: 'John' })
   @IsString()
-  firstName: string;
+  first_name: string;
 
   @ApiProperty({ example: 'Doe' })
   @IsString()
-  lastName: string;
+  last_name: string;
 }

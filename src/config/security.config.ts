@@ -4,7 +4,7 @@ import helmet from 'helmet';
 export function setupSecurity(app: INestApplication) {
   app.use(helmet());
   app.enableCors({
-    origin: '*', // or specific origins
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

@@ -1,29 +1,26 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import databaseConfig from './config/database/database.config';
+import jwtConfig from './config/jwt/jwt.config';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from '@nestjs/config';
-import databaseConfig from './config/database.config';
-import { APP_PIPE } from '@nestjs/core';
-import { globalValidationPipe } from './config/pipes.config';
 import { UsersModule } from './users/users.module';
+import { JwtGlobalModule } from './jwt/jwt.module';
+import { appProviders } from './common/providers/app.providers';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env.development`,
-      load: [databaseConfig],
+      load: [databaseConfig, jwtConfig],
     }),
-    AuthModule,
     DatabaseModule,
+    JwtGlobalModule,
+    AuthModule,
     UsersModule,
   ],
   controllers: [],
-  providers: [
-    {
-      provide: APP_PIPE,
-      useValue: globalValidationPipe,
-    },
-  ],
+  providers: [...appProviders],
 })
 export class AppModule {}
