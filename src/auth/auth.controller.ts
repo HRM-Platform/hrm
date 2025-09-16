@@ -1,9 +1,19 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register_dto';
 import { LoginDto } from './dto/login.dto';
 import { Public } from 'src/common/guards/public.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,6 +23,14 @@ export class AuthController {
   @Post('/register')
   async registerUser(@Body() dto: RegisterDto) {
     return this.authService.registerUser(dto);
+  }
+
+  @Put('update/:id')
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+  ) {
+    return this.authService.updateUser(id, dto);
   }
 
   @Public()

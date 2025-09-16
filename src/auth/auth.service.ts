@@ -12,6 +12,8 @@ import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register_dto';
 import { identity, retry } from 'rxjs';
 import { instanceToPlain, plainToClass } from 'class-transformer';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +34,17 @@ export class AuthService {
     const user = this.usersRepo.create({ ...dto, password: hashedPassword });
     await this.usersRepo.save(user);
     return user;
+  }
+
+  async updateUser(id: number, data: Partial<UpdateUserDto>) {
+    const user = await this.findOneBy(id);
+    if (!user) {
+      throw new NotFoundException(`user with ${id} not found`);
+    }
+
+    Object.assign(user, data);
+
+    return await this.usersRepo.save(user);
   }
 
   // Generate JWT token
