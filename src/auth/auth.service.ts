@@ -10,6 +10,8 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register_dto';
+import { identity } from 'rxjs';
+import { instanceToPlain, plainToClass } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
@@ -53,9 +55,25 @@ export class AuthService {
     return {
       message: 'Login successful',
       data: {
-        ...user,
-        acces_token: accessToken,
+        user: instanceToPlain(user),
+        access_token: accessToken,
       },
+    };
+  }
+
+  async findOneBy(id) {
+    return await this.usersRepo.findOneBy({ id });
+  }
+
+  async getProfile(userId: number) {
+    const user = await this.findOneBy(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      message: 'User profile information',
+      data: instanceToPlain(user),
     };
   }
 }
