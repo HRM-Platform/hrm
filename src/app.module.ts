@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { APP_PIPE } from '@nestjs/core';
 import { globalValidationPipe } from './config/pipes.config';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { globalValidationPipe } from './config/pipes.config';
     }),
     AuthModule,
     DatabaseModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [

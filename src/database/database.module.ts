@@ -15,7 +15,8 @@ import { join } from 'path';
         username: config.get<string>('database.username'),
         password: config.get<string>('database.password'),
         database: config.get<string>('database.database'),
-        entities: [join(__dirname, '../modules/**/*.entity{.ts,.js}')],
+        entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
+
         synchronize: config.get<boolean>('database.synchronize'),
       }),
     }),
