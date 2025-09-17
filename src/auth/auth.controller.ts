@@ -35,10 +35,7 @@ export class AuthController {
   }
 
   @Put('update/:id')
-  async updateUser(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateUserDto,
-  ) {
+  async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.authService.updateUser(id, dto);
   }
 
@@ -49,7 +46,7 @@ export class AuthController {
   }
 
   @Get('/profile')
-  async getProfile(@CurrentUser('sub') userId: number) {
+  async getProfile(@CurrentUser('sub') userId: string) {
     return await this.authService.getProfile(userId);
   }
 
@@ -59,7 +56,7 @@ export class AuthController {
   }
 
   @Delete('delete/:id')
-  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+  async deleteUser(@Param('id') id: string) {
     return this.authService.deleteUser(id);
   }
 

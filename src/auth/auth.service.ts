@@ -31,7 +31,7 @@ export class AuthService {
     return user;
   }
 
-  async updateUser(id: number, data: Partial<UpdateUserDto>) {
+  async updateUser(id: string, data: Partial<UpdateUserDto>) {
     const user = await this.findOneBy(id);
     if (!user) {
       throw new NotFoundException(`user with ${id} not found`);
@@ -72,11 +72,13 @@ export class AuthService {
     };
   }
 
-  async findOneBy(id: number) {
-    return await this.usersRepo.findOneBy({ id });
+  async findOneBy(id: string) {
+    return await this.usersRepo.findOne({
+      where: { id: id },
+    });
   }
 
-  async getProfile(userId: number) {
+  async getProfile(userId: string) {
     const user = await this.findOneBy(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -91,8 +93,9 @@ export class AuthService {
     return await this.usersRepo.find();
   }
 
-  async deleteUser(id: number) {
+  async deleteUser(id: string) {
     const user = await this.findOneBy(id);
+    console.log(user);
     if (!user) {
       throw new NotFoundException('User not found');
     }
