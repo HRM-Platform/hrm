@@ -55,17 +55,20 @@ export class AuthService {
       throw new NotFoundException('Invalid credentials');
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
     const accessToken = this.jwtService.sign(payload, {
       secret: 'altafkorejo',
     });
 
+    const userObj = instanceToPlain(user);
+
     return {
-      message: 'Login successful',
-      data: {
-        user: instanceToPlain(user),
-        access_token: accessToken,
-      },
+      ...userObj,
+      access_token: accessToken,
     };
   }
 

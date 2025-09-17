@@ -7,6 +7,10 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { JwtGlobalModule } from './jwt/jwt.module';
 import { appProviders } from './common/providers/app.providers';
+import { CompaniesModule } from './companies/companies.module';
+import { DepartmentsModule } from './departments/departments.module';
+import { ShiftsModule } from './shifts/shifts.module';
+import { UserShiftsModule } from './user-shifts/user-shifts.module';
 
 @Module({
   imports: [
@@ -19,6 +23,10 @@ import { appProviders } from './common/providers/app.providers';
     JwtGlobalModule,
     AuthModule,
     UsersModule,
+    CompaniesModule,
+    DepartmentsModule,
+    ShiftsModule,
+    UserShiftsModule,
   ],
   controllers: [],
   providers: [...appProviders],
