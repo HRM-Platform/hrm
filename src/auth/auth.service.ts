@@ -1,19 +1,13 @@
 // src/auth/auth.service.ts
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register_dto';
-import { identity, retry } from 'rxjs';
-import { instanceToPlain, plainToClass } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class AuthService {
@@ -74,7 +68,7 @@ export class AuthService {
     };
   }
 
-  async findOneBy(id) {
+  async findOneBy(id: number) {
     return await this.usersRepo.findOneBy({ id });
   }
 
@@ -91,5 +85,13 @@ export class AuthService {
 
   async listUsers() {
     return await this.usersRepo.find();
+  }
+
+  async deleteUser(id: number) {
+    const user = await this.findOneBy(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return await this.usersRepo.remove(user);
   }
 }

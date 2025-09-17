@@ -6,7 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Req,
+  Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register_dto';
@@ -47,5 +47,10 @@ export class AuthController {
   @Get('/list-users')
   async listUsers() {
     return this.authService.listUsers();
+  }
+
+  @Delete('delete/:id')
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.authService.deleteUser(id);
   }
 }
