@@ -5,9 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
-import { RegisterDto } from './dto/register_dto';
+import { RegisterDto } from './dto/register-dto';
 import { instanceToPlain } from 'class-transformer';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from './dto/update-user-dto';
+import { GoogleUser } from './interfaces/google-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -99,5 +100,28 @@ export class AuthService {
         user: instanceToPlain(user),
       },
     };
+  }
+
+  // Login or register via Google
+  async loginOrRegisterGoogle(googleUser: GoogleUser): Promise<User> {
+    let user = await this.usersRepo.findOne({
+      where: { email: googleUser.email },
+    });
+
+    if (!user) {
+      user = this.usersRepo.create({
+        email: googleUser.email,
+        first_name: googleUser.firstName,
+        last_name: googleUser.lastName,
+      });
+      await this.usersRepo.save(user);
+    }
+
+    return user;
+  }
+
+  login(user: User) {
+    const payload = { sub: user.id, email: user.email };
+    return { access_token: this.jwtService.sign(payload) };
   }
 }

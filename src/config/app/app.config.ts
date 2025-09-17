@@ -4,8 +4,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { setupSecurity } from '../security.config';
-import { setupVersioning } from '../versioning.config';
+import { setupSecurity } from './security.config';
+import { setupVersioning } from './versioning.config';
 import { setupSwagger } from '../swagger/swagger.config';
 import { Reflector } from '@nestjs/core';
 
