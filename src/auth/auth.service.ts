@@ -92,6 +92,12 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return await this.usersRepo.remove(user);
+    await this.usersRepo.remove(user);
+    return {
+      message: 'User deleted successfully',
+      data: {
+        user: instanceToPlain(user),
+      },
+    };
   }
 }
