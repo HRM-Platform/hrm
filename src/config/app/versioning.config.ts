@@ -6,4 +6,5 @@ export function setupVersioning(app: INestApplication) {
     defaultVersion: '1',
     prefix: 'api/v',
   });
+  return app;
 }

@@ -8,4 +8,6 @@ export function setupSecurity(app: INestApplication) {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
+
+  return app;
 }

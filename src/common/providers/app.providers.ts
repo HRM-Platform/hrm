@@ -1,5 +1,5 @@
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { globalValidationPipe } from '../../config/app/pipes.config';
+import { globalValidationPipe } from '../../config/pipes.config';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { ResponseInterceptor } from '../interceptors/response.interceptor';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';

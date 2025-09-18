@@ -1,29 +1,15 @@
-import {
-  ClassSerializerInterceptor,
-  INestApplication,
-  Logger,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ClassSerializerInterceptor, INestApplication } from '@nestjs/common';
 import { setupSecurity } from './security.config';
 import { setupVersioning } from './versioning.config';
-import { setupSwagger } from '../swagger/swagger.config';
+import { setupSwagger } from './swagger.config';
 import { Reflector } from '@nestjs/core';
 
-export async function setupApp(app: INestApplication) {
-  const logger = new Logger('AppSetup');
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 3000;
+export function setupApp(app: INestApplication) {
   setupSecurity(app);
   setupVersioning(app);
   setupSwagger(app);
 
   app.enableShutdownHooks();
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
-  await app.listen(port);
-
-  // Logs
-  logger.log('Application successfully started 🎉');
-  logger.log(`🚀 Running on: http://localhost:${port}/api/v1`);
-  logger.log(`📚 Docs at: http://localhost:${port}/docs`);
+  return app;
 }
