@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
-import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { CreateCompanyDto } from './dtos/create-company.dto';
@@ -23,7 +22,6 @@ export class CompaniesController {
 
   @Post()
   async create(@Body() createCompanyDto: CreateCompanyDto) {
-    console.log('hello');
     return this.companiesService.create(createCompanyDto.name);
   }
 

@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CompaniesController } from './companies.controller';
+import { CompaniesService } from './companies.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Company } from './company.entity';
 
 describe('CompaniesController', () => {
   let controller: CompaniesController;
@@ -7,6 +10,13 @@ describe('CompaniesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CompaniesController],
+      providers: [
+        CompaniesService,
+        {
+          provide: getRepositoryToken(Company),
+          useValue: {}, // simple mock
+        },
+      ],
     }).compile();
 
     controller = module.get<CompaniesController>(CompaniesController);

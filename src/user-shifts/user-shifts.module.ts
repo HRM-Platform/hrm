@@ -4,6 +4,6 @@ import { UserShiftsController } from './user-shifts.controller';
 
 @Module({
   providers: [UserShiftsService],
-  controllers: [UserShiftsController]
+  controllers: [UserShiftsController],
 })
 export class UserShiftsModule {}
