@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
   Res,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register-dto';
@@ -19,6 +20,7 @@ import { UpdateUserDto } from './dto/update-user-dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/users/user.entity';
 import { Request, Response } from 'express';
+import { UserProfile } from './interfaces/user-profile.interface';
 
 interface AuthRequest extends Request {
   user: User;
@@ -68,16 +70,39 @@ export class AuthController {
   @Public()
   @Get('google-login')
   @UseGuards(AuthGuard('google'))
-  async googleLogin() {}
+  googleLogin() {
+    Logger.log('Redirecting to Google for authentication');
+  }
 
   // Callback from Google OAuth
   @Public()
   @Get('google-login/callback')
   @UseGuards(AuthGuard('google'))
   googleLoginCallback(@Req() req: AuthRequest, @Res() res: Response) {
+    Logger.log('Google login callback hit');
     const user = req.user;
-    // Redirect to frontend with token
-    res.redirect(`/auth/welcome?email=${encodeURIComponent(user.email)}`);
+
+    // return req.user; //! test JSON response
+
+    if (!user) return res.status(400).send('No user returned from Google');
+    // Map User entity to UserProfile
+    const userProfile: UserProfile = {
+      userId: user.id.toString(),
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      role: 'user',
+    };
+
+    Logger.log(`Authenticated user: ${JSON.stringify(userProfile)}`);
+
+    // Generate JWT
+    const token = this.authService.generateJwt(userProfile);
+
+    Logger.log(`Generated JWT: ${token}`);
+
+    // Redirect frontend with token
+    res.redirect(`http://localhost:3000/welcome?token=${token}`);
   }
 
   @Get('welcome')

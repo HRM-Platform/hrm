@@ -9,6 +9,7 @@ import { RegisterDto } from './dto/register-dto';
 import { instanceToPlain } from 'class-transformer';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { GoogleUser } from './interfaces/google-user.interface';
+import { UserProfile } from './interfaces/user-profile.interface';
 
 @Injectable()
 export class AuthService {
@@ -106,6 +107,17 @@ export class AuthService {
     };
   }
 
+  // Generate JWT token
+  generateJwt(user: UserProfile) {
+    return this.jwtService.sign({
+      sub: user.userId,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+    });
+  }
+
   // Login or register via Google
   async loginOrRegisterGoogle(googleUser: GoogleUser): Promise<User> {
     let user = await this.usersRepo.findOne({
@@ -122,10 +134,5 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  login(user: User) {
-    const payload = { sub: user.id, email: user.email };
-    return { access_token: this.jwtService.sign(payload) };
   }
 }
