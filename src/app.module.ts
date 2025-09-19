@@ -5,7 +5,6 @@ import jwtConfig from './config/jwt/jwt.config';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
-import { JwtGlobalModule } from './jwt/jwt.module';
 import { appProviders } from './common/providers/app.providers';
 import { CompaniesModule } from './companies/companies.module';
 import { DepartmentsModule } from './departments/departments.module';
@@ -20,7 +19,6 @@ import { UserShiftsModule } from './user-shifts/user-shifts.module';
       load: [databaseConfig, jwtConfig],
     }),
     DatabaseModule,
-    JwtGlobalModule,
     AuthModule,
     UsersModule,
     CompaniesModule,
