@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { UserProfile } from 'src/auth/interfaces/user-profile.interface';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -19,8 +20,14 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles) return true;
 
-    const { user } = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<{ user?: UserProfile }>();
+    const user = request.user;
+
+    console.log('---------');
+    console.log('Required roles:', requiredRoles);
     console.log(user);
+    console.log('---------');
+    console.log(user?.role);
     if (!user) throw new ForbiddenException('User not found');
 
     if (!requiredRoles.includes(user.role)) {
