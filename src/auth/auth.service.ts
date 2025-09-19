@@ -60,9 +60,7 @@ export class AuthService {
       email: user.email,
       role: user.role,
     };
-    const accessToken = this.jwtService.sign(payload, {
-      secret: 'altafkorejo',
-    });
+    const accessToken = this.jwtService.sign(payload);
 
     const userObj = instanceToPlain(user);
 

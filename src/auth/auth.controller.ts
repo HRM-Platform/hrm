@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Delete,
@@ -46,8 +45,13 @@ export class AuthController {
   }
 
   @Get('/profile')
-  async getProfile(@CurrentUser('sub') userId: string) {
+  async getProfile(@CurrentUser('userId') userId: string) {
     return await this.authService.getProfile(userId);
+  }
+
+  @Get('/my-email')
+  getMyEmail(@CurrentUser('email') email: string | undefined) {
+    return { email };
   }
 
   @Get('/list-users')

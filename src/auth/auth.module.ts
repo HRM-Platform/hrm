@@ -6,16 +6,12 @@ import { AuthController } from './auth.controller';
 import { User } from '../users/user.entity';
 import { JwtStrategy } from './strategies/jwt-strategy';
 import { JwtGlobalModule } from 'src/jwt/jwt.module';
-//import { GoogleStrategy } from './strategies/google-strategy';
+import { GoogleStrategy } from './strategies/google-strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), PassportModule, JwtGlobalModule],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    //GoogleStrategy
-  ],
+  providers: [AuthService, JwtStrategy, GoogleStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

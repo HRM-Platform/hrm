@@ -12,6 +12,8 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 3000;
   await app.listen(port);
+  Logger.log(`🚀 Running on: http://localhost:${port}/api/v1`);
+  Logger.log(`📚 Docs at: http://localhost:${port}/docs`);
   return await app.getUrl();
 }
 
