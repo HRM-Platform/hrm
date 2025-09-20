@@ -7,9 +7,14 @@ import { User } from '../users/user.entity';
 import { JwtStrategy } from './strategies/jwt-strategy';
 import { JwtGlobalModule } from 'src/jwt/jwt.module';
 import { GoogleStrategy } from './strategies/google-strategy';
+import { Department } from 'src/departments/department.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), PassportModule, JwtGlobalModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Department]),
+    PassportModule,
+    JwtGlobalModule,
+  ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, GoogleStrategy],
   exports: [AuthService],

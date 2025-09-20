@@ -10,6 +10,7 @@ import {
   UseGuards,
   Res,
   Logger,
+  Patch,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register-dto';
@@ -21,6 +22,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/users/user.entity';
 import { Request, Response } from 'express';
 import { UserProfile } from './interfaces/user-profile.interface';
+import { AssignDepartmentDto } from './dto/assign-department.dto';
 
 interface AuthRequest extends Request {
   user: User;
@@ -64,6 +66,11 @@ export class AuthController {
   @Delete('delete/:id')
   async deleteUser(@Param('id') id: string) {
     return this.authService.deleteUser(id);
+  }
+
+  @Patch('/assign-department')
+  async AssignDepartment(@Body() dto: AssignDepartmentDto) {
+    return this.authService.assignDepartment(dto);
   }
 
   // Redirect to Google for login

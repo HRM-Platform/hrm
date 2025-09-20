@@ -52,9 +52,9 @@ export class DepartmentsService {
 
     if (dto.name) department.name = dto.name;
 
-    if (dto.companyId) {
+    if (dto.company_id) {
       const company = await this.companyRepo.findOne({
-        where: { id: dto.companyId },
+        where: { id: dto.company_id },
       });
       if (!company) throw new NotFoundException('Company not found');
       department.company = company;

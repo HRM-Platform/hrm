@@ -1,113 +1,98 @@
 // src/auth/auth.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
+import { Department } from 'src/departments/department.entity';
 import { RegisterDto } from './dto/register-dto';
-import { instanceToPlain } from 'class-transformer';
 import { UpdateUserDto } from './dto/update-user-dto';
+import { AssignDepartmentDto } from './dto/assign-department.dto';
 import { GoogleUser } from './interfaces/google-user.interface';
 import { UserProfile } from './interfaces/user-profile.interface';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private usersRepo: Repository<User>,
-    private jwtService: JwtService,
+    private readonly usersRepo: Repository<User>,
+    @InjectRepository(Department)
+    private readonly deptRepo: Repository<Department>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async registerUser(dto: RegisterDto) {
     const existing = await this.usersRepo.findOne({
       where: { email: dto.email },
     });
-    if (existing) {
-      throw new NotFoundException('Email already exist');
-    }
+    if (existing) throw new ConflictException('Email already exists');
+
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = this.usersRepo.create({ ...dto, password: hashedPassword });
+
     await this.usersRepo.save(user);
-    return user;
+    return instanceToPlain(user);
   }
 
   async updateUser(id: string, data: Partial<UpdateUserDto>) {
     const user = await this.findOneBy(id);
-    if (!user) {
-      throw new NotFoundException(`user with ${id} not found`);
-    }
+    if (!user) throw new NotFoundException(`User with ID ${id} not found`);
 
     Object.assign(user, data);
-
-    return await this.usersRepo.save(user);
+    await this.usersRepo.save(user);
+    return instanceToPlain(user);
   }
 
-  // Generate JWT token
   async loginUser(email: string, password: string) {
-    const user = await this.usersRepo.findOneBy({ email });
-
-    if (!user) {
-      throw new NotFoundException('Invalid credentials');
-    }
+    const user = await this.usersRepo.findOne({ where: { email } });
+    if (!user) throw new BadRequestException('Invalid credentials');
 
     const isValidPass = await bcrypt.compare(password, user.password);
-    if (!isValidPass) {
-      throw new NotFoundException('Invalid credentials');
-    }
+    if (!isValidPass) throw new BadRequestException('Invalid credentials');
 
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload);
 
-    const userObj = instanceToPlain(user);
-
-    return {
-      ...userObj,
-      access_token: accessToken,
-    };
+    return { ...instanceToPlain(user), access_token: accessToken };
   }
 
   async findOneBy(id: string) {
     return await this.usersRepo.findOne({
-      where: { id: id },
+      where: { id },
+      relations: ['department'],
     });
   }
 
   async getProfile(userId: string) {
     const user = await this.findOneBy(userId);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    if (!user) throw new NotFoundException('User not found');
 
-    return {
-      user: instanceToPlain(user),
-    };
+    return { user: instanceToPlain(user) };
   }
 
   async listUsers() {
-    return await this.usersRepo.find();
+    const users = await this.usersRepo.find({ relations: ['department'] });
+    return users.map((u) => instanceToPlain(u));
   }
 
   async deleteUser(id: string) {
     const user = await this.findOneBy(id);
-    console.log(user);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    if (!user) throw new NotFoundException('User not found');
+
     await this.usersRepo.remove(user);
     return {
       message: 'User deleted successfully',
-      data: {
-        user: instanceToPlain(user),
-      },
+      data: { user: instanceToPlain(user) },
     };
   }
 
-  // Generate JWT token
   generateJwt(user: UserProfile) {
     return this.jwtService.sign({
       sub: user.userId,
@@ -118,12 +103,10 @@ export class AuthService {
     });
   }
 
-  // Login or register via Google
   async loginOrRegisterGoogle(googleUser: GoogleUser): Promise<User> {
     let user = await this.usersRepo.findOne({
       where: { email: googleUser.email },
     });
-
     if (!user) {
       user = this.usersRepo.create({
         email: googleUser.email,
@@ -132,7 +115,27 @@ export class AuthService {
       });
       await this.usersRepo.save(user);
     }
+    return instanceToPlain(user) as any;
+  }
 
-    return user;
+  async assignDepartment(dto: AssignDepartmentDto) {
+    const user = await this.usersRepo.findOne({
+      where: { id: dto.user_id },
+      relations: ['department'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const department = await this.deptRepo.findOne({
+      where: { id: dto.department_id },
+    });
+    if (!department) throw new NotFoundException('Department not found');
+
+    if (user.department?.id === department.id) {
+      throw new BadRequestException('User is already in this department');
+    }
+
+    user.department = department;
+    user.status = true;
+    return instanceToPlain(await this.usersRepo.save(user));
   }
 }
