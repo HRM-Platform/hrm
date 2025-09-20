@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { setupApp } from './config/app/app.config';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
 
 async function bootstrap() {
   let app = await NestFactory.create(AppModule);

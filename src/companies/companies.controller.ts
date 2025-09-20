@@ -13,11 +13,12 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
+import { UserRole } from 'src/users/user-role.enum';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('companies')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles('admin', 'super_admin')
+@UseGuards(RolesGuard)
+@Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 

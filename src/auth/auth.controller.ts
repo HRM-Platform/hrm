@@ -23,6 +23,8 @@ import { User } from 'src/users/user.entity';
 import { Request, Response } from 'express';
 import { UserProfile } from './interfaces/user-profile.interface';
 import { AssignDepartmentDto } from './dto/assign-department.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from 'src/users/user-role.enum';
 
 interface AuthRequest extends Request {
   user: User;
@@ -69,6 +71,7 @@ export class AuthController {
   }
 
   @Patch('/assign-department')
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   async AssignDepartment(@Body() dto: AssignDepartmentDto) {
     return this.authService.assignDepartment(dto);
   }
