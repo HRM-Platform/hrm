@@ -4,7 +4,4 @@ import { RolesGuard } from '../guards/roles.guard';
 
 export const ROLES_KEY = 'roles';
 export const Roles = (...roles: string[]) =>
-  applyDecorators(
-    SetMetadata(ROLES_KEY, roles),
-    UseGuards(AuthGuard('jwt'), RolesGuard),
-  );
+  applyDecorators(SetMetadata(ROLES_KEY, roles), UseGuards(RolesGuard));
