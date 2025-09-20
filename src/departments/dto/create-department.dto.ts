@@ -5,5 +5,6 @@ export class CreateDepartmentDto {
   name: string;
 
   @IsUUID()
-  companyId: string;
+  @IsNotEmpty()
+  company_id: string;
 }

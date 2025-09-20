@@ -18,9 +18,14 @@ export class DepartmentsService {
 
   async create(dto: CreateDepartmentDto): Promise<Department> {
     const company = await this.companyRepo.findOne({
-      where: { id: dto.companyId },
+      where: { id: dto.company_id },
     });
     if (!company) throw new NotFoundException('Company not found');
+
+    const exist = await this.departmentRepo.findOneBy({ name: dto.name });
+    if (exist) {
+      throw new NotFoundException('Department with this name already exists');
+    }
 
     const department = this.departmentRepo.create({
       name: dto.name,
