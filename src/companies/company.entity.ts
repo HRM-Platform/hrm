@@ -19,10 +19,6 @@ export class Company {
 
   @OneToMany(() => Department, (d) => d.company)
   departments: Department[];
-
-  @OneToMany(() => User, (u) => u.company)
-  users: User[];
-
   @CreateDateColumn()
   created_at: Date;
 

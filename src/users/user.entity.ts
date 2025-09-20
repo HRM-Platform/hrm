@@ -24,10 +24,6 @@ export class User {
   })
   role: string;
 
-  @ManyToOne(() => Company, (company) => company.users, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'company_id' })
-  company: Company;
-
   @ManyToOne(() => Department, (department) => department.users, {
     nullable: true,
     onDelete: 'SET NULL',
@@ -47,6 +43,9 @@ export class User {
 
   @Column({ name: 'last_name' })
   last_name: string;
+
+  @Column({ default: false })
+  status: boolean;
 
   @CreateDateColumn()
   created_at: Date;

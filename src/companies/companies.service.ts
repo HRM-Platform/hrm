@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from './company.entity';
 import { Repository } from 'typeorm';
@@ -11,18 +15,26 @@ export class CompaniesService {
   ) {}
 
   async create(name: string) {
+    const existing = await this.companyRepo.findOne({
+      where: { name },
+    });
+
+    if (existing) {
+      throw new ConflictException('Company name already exists');
+    }
+
     const company = this.companyRepo.create({ name });
     return this.companyRepo.save(company);
   }
 
   async findAll() {
-    return this.companyRepo.find({ relations: ['users', 'departments'] });
+    return this.companyRepo.find({ relations: ['departments'] });
   }
 
   async findOne(id: string) {
     const company = await this.companyRepo.findOne({
       where: { id: id },
-      relations: ['users', 'departments'],
+      relations: ['departments'],
     });
     if (!company) {
       throw new NotFoundException('Company not found');
