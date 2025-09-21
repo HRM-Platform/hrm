@@ -1,4 +1,6 @@
 import { Department } from 'src/departments/department.entity';
+import { LeaveRequest } from 'src/leave/leave-request/leave-request.entity';
+import { LeaveType } from 'src/leave/leavetype/leave-type.entity';
 import { Shift } from 'src/shifts/shift.entity';
 import { User } from 'src/users/user.entity';
 import {
@@ -28,4 +30,10 @@ export class Company {
 
   @OneToMany(() => Shift, (shift) => shift.company)
   shifts: Shift[];
+
+  @OneToMany(() => LeaveType, (leaveType) => leaveType.company)
+  leaveTypes: LeaveType[];
+
+  @OneToMany(() => LeaveRequest, (leaveRequest) => leaveRequest.company)
+  leaveRequests: LeaveRequest[];
 }

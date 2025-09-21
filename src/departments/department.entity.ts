@@ -1,4 +1,5 @@
 import { Company } from 'src/companies/company.entity';
+import { LeaveRequest } from 'src/leave/leave-request/leave-request.entity';
 import { Shift } from 'src/shifts/shift.entity';
 import { User } from 'src/users/user.entity';
 import {
@@ -39,4 +40,7 @@ export class Department {
   @OneToMany(() => Shift, (shift) => shift.department)
   @JoinColumn({ name: 'shift_id' })
   shifts: Shift[];
+
+  @OneToMany(() => LeaveRequest, (leaveRequest) => leaveRequest.department)
+  leaveRequests: LeaveRequest[];
 }

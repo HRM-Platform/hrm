@@ -3,6 +3,8 @@ import { Exclude } from 'class-transformer';
 import { Attendance } from 'src/attendance/attendance.entity';
 import { Company } from 'src/companies/company.entity';
 import { Department } from 'src/departments/department.entity';
+import { LeaveBalance } from 'src/leave/leave-balance/leave-balance.entity';
+import { LeaveRequest } from 'src/leave/leave-request/leave-request.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -57,4 +59,10 @@ export class User {
 
   @OneToMany(() => Attendance, (attendance) => attendance.user)
   attendance: Attendance[];
+
+  @OneToMany(() => LeaveBalance, (leaveBalance) => leaveBalance.user)
+  leaveBalances: LeaveBalance[];
+
+  @OneToMany(() => LeaveRequest, (leaveRequest) => leaveRequest.user)
+  leaveRequests: LeaveRequest[];
 }

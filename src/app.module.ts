@@ -10,6 +10,9 @@ import { CompaniesModule } from './companies/companies.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { ShiftsModule } from './shifts/shifts.module';
 import { AttendanceModule } from './attendance/attendance.module';
+import { LeavetypeModule } from './leave/leavetype/leavetype.module';
+import { LeaveBalanceModule } from './leave/leave-balance/leave-balance.module';
+import { LeaveRequestModule } from './leave/leave-request/leave-request.module';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { AttendanceModule } from './attendance/attendance.module';
     DepartmentsModule,
     ShiftsModule,
     AttendanceModule,
+    LeavetypeModule,
+    LeaveBalanceModule,
+    LeaveRequestModule,
   ],
   controllers: [],
   providers: [...appProviders],
