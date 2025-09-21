@@ -1,5 +1,6 @@
 // src/users/user.entity.ts
 import { Exclude } from 'class-transformer';
+import { Attendance } from 'src/attendance/attendance.entity';
 import { Company } from 'src/companies/company.entity';
 import { Department } from 'src/departments/department.entity';
 import {
@@ -10,6 +11,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('users')
@@ -52,4 +54,7 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => Attendance, (attendance) => attendance.user)
+  attendance: Attendance[];
 }

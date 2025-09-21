@@ -1,4 +1,5 @@
 import { Company } from 'src/companies/company.entity';
+import { Shift } from 'src/shifts/shift.entity';
 import { User } from 'src/users/user.entity';
 import {
   Column,
@@ -26,6 +27,7 @@ export class Department {
   company: Company;
 
   @OneToMany(() => User, (user) => user.department)
+  @JoinColumn({ name: 'user_id' })
   users: User[];
 
   @CreateDateColumn()
@@ -33,4 +35,8 @@ export class Department {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => Shift, (shift) => shift.department)
+  @JoinColumn({ name: 'shift_id' })
+  shifts: Shift[];
 }

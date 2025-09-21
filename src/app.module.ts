@@ -9,7 +9,7 @@ import { appProviders } from './common/providers/app.providers';
 import { CompaniesModule } from './companies/companies.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { ShiftsModule } from './shifts/shifts.module';
-import { UserShiftsModule } from './user-shifts/user-shifts.module';
+import { AttendanceModule } from './attendance/attendance.module';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { UserShiftsModule } from './user-shifts/user-shifts.module';
     CompaniesModule,
     DepartmentsModule,
     ShiftsModule,
-    UserShiftsModule,
+    AttendanceModule,
   ],
   controllers: [],
   providers: [...appProviders],
