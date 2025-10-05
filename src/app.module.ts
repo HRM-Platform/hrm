@@ -13,6 +13,7 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { LeavetypeModule } from './leave/leavetype/leavetype.module';
 import { LeaveBalanceModule } from './leave/leave-balance/leave-balance.module';
 import { LeaveRequestModule } from './leave/leave-request/leave-request.module';
+import { ExistsConstraint } from './common/validators/exists.constraint';
 
 @Module({
   imports: [
@@ -34,5 +35,6 @@ import { LeaveRequestModule } from './leave/leave-request/leave-request.module';
   ],
   controllers: [],
   providers: [...appProviders],
+  exports: [ExistsConstraint],
 })
 export class AppModule {}

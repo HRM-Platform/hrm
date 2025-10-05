@@ -17,6 +17,7 @@ import { AssignDepartmentDto } from './dto/assign-department.dto';
 import { GoogleUser } from './interfaces/google-user.interface';
 import { UserProfile } from './interfaces/user-profile.interface';
 import { instanceToPlain } from 'class-transformer';
+import { MESSAGES } from 'src/common/constants/messages';
 
 @Injectable()
 export class AuthService {
@@ -52,15 +53,25 @@ export class AuthService {
 
   async loginUser(email: string, password: string) {
     const user = await this.usersRepo.findOne({ where: { email } });
-    if (!user) throw new BadRequestException('Invalid credentials');
+    if (!user) throw new BadRequestException(MESSAGES.EMAIL.NOT_FOUND);
 
     const isValidPass = await bcrypt.compare(password, user.password);
-    if (!isValidPass) throw new BadRequestException('Invalid credentials');
+    if (!isValidPass) throw new BadRequestException(MESSAGES.PASSWORD.INVALID);
 
     const payload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = this.jwtService.sign(payload);
 
     return { ...instanceToPlain(user), access_token: accessToken };
+  }
+
+  async checkEmail(email: string) {
+    const user = await this.usersRepo.findOne({ where: { email } });
+    if (!user) throw new BadRequestException(MESSAGES.EMAIL.NOT_FOUND);
+
+    return {
+      message: 'email-verified',
+      data: { user: instanceToPlain(user) },
+    };
   }
 
   async findOneBy(id: string) {

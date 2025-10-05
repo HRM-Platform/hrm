@@ -25,6 +25,8 @@ import { UserProfile } from './interfaces/user-profile.interface';
 import { AssignDepartmentDto } from './dto/assign-department.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/users/user-role.enum';
+import { Exists } from 'src/common/decorators/exists.decorator';
+import { CheckEmailDto } from './dto/check-email.dto';
 
 interface AuthRequest extends Request {
   user: User;
@@ -48,6 +50,12 @@ export class AuthController {
   @Post('/login')
   async loginUser(@Body() { email, password }: LoginDto) {
     return await this.authService.loginUser(email, password);
+  }
+
+  @Public()
+  @Post('/check-email')
+  async checkEmail(@Body() { email }: CheckEmailDto) {
+    return await this.authService.checkEmail(email);
   }
 
   @Get('/profile')

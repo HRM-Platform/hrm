@@ -3,6 +3,8 @@ import { globalValidationPipe } from '../../config/pipes.config';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { ResponseInterceptor } from '../interceptors/response.interceptor';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';
+import { ExistsConstraint } from '../validators/exists.constraint';
+import { DataSource } from 'typeorm';
 
 export const appProviders = [
   {
@@ -21,4 +23,5 @@ export const appProviders = [
     provide: APP_FILTER,
     useClass: AllExceptionsFilter,
   },
+  ExistsConstraint,
 ];
