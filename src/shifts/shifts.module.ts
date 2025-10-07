@@ -10,6 +10,6 @@ import { Department } from 'src/departments/department.entity';
   imports: [TypeOrmModule.forFeature([Shift, Company, Department])],
 
   providers: [ShiftsService],
-  controllers: [ShiftsController],  
+  controllers: [ShiftsController],
 })
 export class ShiftsModule {}
