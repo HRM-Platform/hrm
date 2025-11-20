@@ -8,6 +8,7 @@ import { IsNull, Repository } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { Shift } from 'src/shifts/shift.entity';
 import { Attendance } from '../attendance.entity';
+import { Break } from '../break.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -21,6 +22,9 @@ export class AttendanceHelper {
 
     @InjectRepository(Attendance)
     private readonly attendanceRepo: Repository<Attendance>,
+
+    @InjectRepository(Break)
+    private readonly breakRepo: Repository<Break>,
   ) {}
 
   async getUserWithDepartment(userId: string) {
@@ -183,6 +187,104 @@ export class AttendanceHelper {
       page,
       limit,
       total,
+    };
+  }
+
+  // Break Management Helper Methods
+  async startBreak(userId: string) {
+    const today = new Date().toISOString().split('T')[0];
+
+    // Check if user is checked in
+    const attendance = await this.attendanceRepo.findOne({
+      where: { user: { id: userId }, date: today },
+      relations: ['breaks'],
+    });
+
+    if (!attendance) {
+      throw new BadRequestException('User has not checked in today');
+    }
+
+    if (attendance.check_out) {
+      throw new BadRequestException('User has already checked out');
+    }
+
+    // Check if there's an active break
+    const activeBreak = attendance.breaks?.find((b) => !b.break_end);
+    if (activeBreak) {
+      throw new BadRequestException('Break is already in progress');
+    }
+
+    // Create new break
+    const newBreak = this.breakRepo.create({
+      attendance,
+      break_start: new Date(),
+    });
+
+    await this.breakRepo.save(newBreak);
+
+    return {
+      message: 'Break started successfully',
+      data: newBreak,
+    };
+  }
+
+  async endBreak(userId: string) {
+    const today = new Date().toISOString().split('T')[0];
+
+    const attendance = await this.attendanceRepo.findOne({
+      where: { user: { id: userId }, date: today },
+      relations: ['breaks'],
+    });
+
+    if (!attendance) {
+      throw new BadRequestException('User has not checked in today');
+    }
+
+    // Find active break
+    const activeBreak = attendance.breaks?.find((b) => !b.break_end);
+    if (!activeBreak) {
+      throw new BadRequestException('No active break found');
+    }
+
+    // End the break
+    activeBreak.break_end = new Date();
+    await this.breakRepo.save(activeBreak);
+
+    return {
+      message: 'Break ended successfully',
+      data: activeBreak,
+    };
+  }
+
+  async getBreaks(attendanceId: string) {
+    const breaks = await this.breakRepo.find({
+      where: { attendance: { id: attendanceId } },
+      order: { break_start: 'ASC' },
+    });
+
+    return {
+      message: 'Breaks retrieved successfully',
+      data: breaks,
+    };
+  }
+
+  async getActiveBreak(userId: string) {
+    const today = new Date().toISOString().split('T')[0];
+
+    const attendance = await this.attendanceRepo.findOne({
+      where: { user: { id: userId }, date: today },
+      relations: ['breaks'],
+    });
+
+    if (!attendance) {
+      return { message: 'No attendance record found', data: null };
+    }
+
+    const activeBreak = attendance.breaks?.find((b) => !b.break_end);
+
+    return {
+      message: activeBreak ? 'Active break found' : 'No active break',
+      data: activeBreak || null,
     };
   }
 }

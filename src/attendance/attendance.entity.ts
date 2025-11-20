@@ -1,10 +1,12 @@
 import { Shift } from 'src/shifts/shift.entity';
 import { User } from 'src/users/user.entity';
+import { Break } from './break.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
@@ -38,6 +40,9 @@ export class Attendance {
     default: 'PRESENT',
   })
   status: string;
+
+  @OneToMany(() => Break, (breakRecord) => breakRecord.attendance)
+  breaks: Break[];
 
   @CreateDateColumn()
   created_at: Date;

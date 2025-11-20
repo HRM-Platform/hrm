@@ -5,6 +5,8 @@ import { Shift } from 'src/shifts/shift.entity';
 import { AttendanceHelper } from './helper/attendance.helper';
 import { CheckInDto } from './dtos/check-in.dto';
 import { CheckOutDto } from './dtos/check-out.dto';
+import { StartBreakDto } from './dtos/start-break.dto';
+import { EndBreakDto } from './dtos/end-break.dto';
 
 @Injectable()
 export class AttendanceService {
@@ -162,5 +164,22 @@ export class AttendanceService {
         },
       },
     };
+  }
+
+  // Break Management Methods
+  async startBreak(dto: StartBreakDto) {
+    return await this.helper.startBreak(dto.user_id);
+  }
+
+  async endBreak(dto: EndBreakDto) {
+    return await this.helper.endBreak(dto.user_id);
+  }
+
+  async getBreaks(attendanceId: string) {
+    return await this.helper.getBreaks(attendanceId);
+  }
+
+  async getActiveBreak(userId: string) {
+    return await this.helper.getActiveBreak(userId);
   }
 }

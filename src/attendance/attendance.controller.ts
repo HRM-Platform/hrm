@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { CheckInDto } from './dtos/check-in.dto';
 import { CheckOutDto } from './dtos/check-out.dto';
+import { StartBreakDto } from './dtos/start-break.dto';
+import { EndBreakDto } from './dtos/end-break.dto';
 
 @Controller('attendances')
 export class AttendanceController {
@@ -63,5 +65,26 @@ export class AttendanceController {
   @Get('user/:id/shift')
   getUserShiftInfo(@Param('id') id: string) {
     return this.attendanceService.getUserShiftInfo(id);
+  }
+
+  // Break Management Endpoints
+  @Post('break/start')
+  startBreak(@Body() dto: StartBreakDto) {
+    return this.attendanceService.startBreak(dto);
+  }
+
+  @Post('break/end')
+  endBreak(@Body() dto: EndBreakDto) {
+    return this.attendanceService.endBreak(dto);
+  }
+
+  @Get(':attendanceId/breaks')
+  getBreaks(@Param('attendanceId') attendanceId: string) {
+    return this.attendanceService.getBreaks(attendanceId);
+  }
+
+  @Get('user/:userId/active-break')
+  getActiveBreak(@Param('userId') userId: string) {
+    return this.attendanceService.getActiveBreak(userId);
   }
 }

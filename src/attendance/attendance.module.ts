@@ -5,11 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Attendance } from './attendance.entity';
 import { User } from 'src/users/user.entity';
 import { Shift } from 'src/shifts/shift.entity';
+import { Break } from './break.entity';
 import { AttendanceHelper } from './helper/attendance.helper';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Attendance, User, Shift])],
-
+  imports: [TypeOrmModule.forFeature([Attendance, User, Shift, Break])],
   controllers: [AttendanceController],
   providers: [AttendanceService, AttendanceHelper],
   exports: [AttendanceService],
