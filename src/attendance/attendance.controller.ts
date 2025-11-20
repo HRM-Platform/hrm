@@ -31,4 +31,37 @@ export class AttendanceController {
   getCompanyAttendance(@Param('id') id: string, @Query('date') date: string) {
     return this.attendanceService.getCompanyAttendance(id, date);
   }
+
+  // Mobile App Critical Endpoints
+  @Get('status/:userId')
+  getCurrentStatus(@Param('userId') userId: string) {
+    return this.attendanceService.getCurrentStatus(userId);
+  }
+
+  @Get('today/:userId')
+  getTodayAttendance(@Param('userId') userId: string) {
+    return this.attendanceService.getTodayAttendance(userId);
+  }
+
+  @Get('user/:id/history')
+  getAttendanceHistory(
+    @Param('id') id: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.attendanceService.getAttendanceHistory(
+      id,
+      startDate,
+      endDate,
+      page ? parseInt(page) : 1,
+      limit ? parseInt(limit) : 10,
+    );
+  }
+
+  @Get('user/:id/shift')
+  getUserShiftInfo(@Param('id') id: string) {
+    return this.attendanceService.getUserShiftInfo(id);
+  }
 }

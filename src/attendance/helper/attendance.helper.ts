@@ -4,7 +4,7 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { Shift } from 'src/shifts/shift.entity';
 import { Attendance } from '../attendance.entity';
@@ -49,9 +49,21 @@ export class AttendanceHelper {
   }
 
   async getUserShift(user: User) {
-    const shift = await this.shiftRepo.findOne({
-      where: { department: { id: user.department!.company.id } },
+    // First, try to find a department-specific shift
+    let shift = await this.shiftRepo.findOne({
+      where: { department: { id: user.department!.id } },
     });
+
+    // If no department-specific shift, fallback to company-wide shift
+    if (!shift) {
+      shift = await this.shiftRepo.findOne({
+        where: {
+          company: { id: user.department!.company.id },
+          department: IsNull(),
+        },
+      });
+    }
+
     if (!shift) throw new BadRequestException('No shift assigned for user');
     return shift;
   }
@@ -99,10 +111,10 @@ export class AttendanceHelper {
 
     if (!attendance)
       throw new BadRequestException('User has not checked in today');
-    if ((attendance as any).checkOut)
+    if (attendance.check_out)
       throw new BadRequestException('User already checked out today');
 
-    attendance['checkOut'] = new Date();
+    attendance.check_out = new Date();
     return this.attendanceRepo.save(attendance);
   }
 
@@ -126,5 +138,51 @@ export class AttendanceHelper {
       where: { user: { department: { company: { id: companyId } } }, date },
       relations: ['user', 'shift'],
     });
+  }
+
+  // Mobile App Critical Helper Methods
+  async getTodayAttendance(userId: string): Promise<Attendance | null> {
+    const today = new Date().toISOString().split('T')[0];
+    return this.attendanceRepo.findOne({
+      where: { user: { id: userId }, date: today },
+      relations: ['shift', 'user'],
+    });
+  }
+
+  async getAttendanceHistory(
+    userId: string,
+    startDate?: string,
+    endDate?: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
+    const queryBuilder = this.attendanceRepo
+      .createQueryBuilder('attendance')
+      .leftJoinAndSelect('attendance.shift', 'shift')
+      .leftJoinAndSelect('attendance.user', 'user')
+      .where('attendance.user_id = :userId', { userId });
+
+    if (startDate) {
+      queryBuilder.andWhere('attendance.date >= :startDate', { startDate });
+    }
+
+    if (endDate) {
+      queryBuilder.andWhere('attendance.date <= :endDate', { endDate });
+    }
+
+    const total = await queryBuilder.getCount();
+
+    const data = await queryBuilder
+      .orderBy('attendance.date', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+
+    return {
+      data,
+      page,
+      limit,
+      total,
+    };
   }
 }

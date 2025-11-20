@@ -8,8 +8,8 @@ import { Department } from 'src/departments/department.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Shift, Company, Department])],
-
   providers: [ShiftsService],
   controllers: [ShiftsController],
+  exports: [ShiftsService],
 })
 export class ShiftsModule {}

@@ -14,6 +14,7 @@ import { LeavetypeModule } from './leave/leavetype/leavetype.module';
 import { LeaveBalanceModule } from './leave/leave-balance/leave-balance.module';
 import { LeaveRequestModule } from './leave/leave-request/leave-request.module';
 import { ExistsConstraint } from './common/validators/exists.constraint';
+import { SetupModule } from './setup/setup.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ExistsConstraint } from './common/validators/exists.constraint';
     LeavetypeModule,
     LeaveBalanceModule,
     LeaveRequestModule,
+    SetupModule,
   ],
   controllers: [],
   providers: [...appProviders],
