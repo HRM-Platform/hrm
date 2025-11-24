@@ -16,6 +16,8 @@ import { LeaveRequestModule } from './leave/leave-request/leave-request.module';
 import { ExistsConstraint } from './common/validators/exists.constraint';
 import { SetupModule } from './setup/setup.module';
 
+import { AppController } from './app.controller';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,7 +37,7 @@ import { SetupModule } from './setup/setup.module';
     LeaveRequestModule,
     SetupModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [...appProviders],
   exports: [ExistsConstraint],
 })
