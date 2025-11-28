@@ -87,4 +87,37 @@ export class AttendanceController {
   getActiveBreak(@Param('userId') userId: string) {
     return this.attendanceService.getActiveBreak(userId);
   }
+
+  // Mobile App Summary Endpoints
+  @Get('summary/daily/:userId')
+  getDailySummary(
+    @Param('userId') userId: string,
+    @Query('month') month: string,
+    @Query('year') year: string,
+  ) {
+    // Default to current month/year if not provided
+    const now = new Date();
+    const currentMonth = (now.getMonth() + 1).toString();
+    const currentYear = now.getFullYear().toString();
+
+    return this.attendanceService.getDailySummary(
+      userId,
+      month || currentMonth,
+      year || currentYear,
+    );
+  }
+
+  @Get('summary/weekly/:userId')
+  getWeeklySummary(
+    @Param('userId') userId: string,
+    @Query('year') year: string,
+  ) {
+    // Default to current year if not provided
+    const currentYear = new Date().getFullYear().toString();
+
+    return this.attendanceService.getWeeklySummary(
+      userId,
+      year || currentYear,
+    );
+  }
 }

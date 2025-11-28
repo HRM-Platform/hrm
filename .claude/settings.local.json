@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run build:*)",
       "Bash(npm run lint:*)",
-      "Bash(npx tsc --noEmit src/attendance/attendance.service.ts)"
+      "Bash(npx tsc --noEmit src/attendance/attendance.service.ts)",
+      "Bash(npm run start:dev:*)",
+      "Bash(timeout /t 10)"
     ],
     "deny": [],
     "ask": []
