@@ -4,7 +4,7 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Like, Repository } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { Shift } from 'src/shifts/shift.entity';
 import { Attendance } from '../attendance.entity';
@@ -286,5 +286,155 @@ export class AttendanceHelper {
       message: activeBreak ? 'Active break found' : 'No active break',
       data: activeBreak || null,
     };
+  }
+
+  // Mobile App Summary Methods
+  async getDailySummary(userId: string, month: string, year: string) {
+    // Format month to ensure 2 digits
+    const formattedMonth = month.padStart(2, '0');
+    const datePattern = `${year}-${formattedMonth}%`;
+
+    const attendances = await this.attendanceRepo.find({
+      where: {
+        user: { id: userId },
+        date: Like(datePattern),
+      },
+      order: { date: 'DESC' },
+    });
+
+    const summary = attendances.map((record) => {
+      let totalHours = '-';
+      let hoursValue = 0;
+
+      if (record.check_in && record.check_out) {
+        const diff =
+          new Date(record.check_out).getTime() -
+          new Date(record.check_in).getTime();
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        totalHours = `${hours}h ${minutes}m`;
+        hoursValue = diff / (1000 * 60 * 60);
+      }
+
+      // Format date for display (e.g., "October 3, 2024")
+      const dateObj = new Date(record.date);
+      const formattedDate = dateObj.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      });
+
+      // Format times
+      const formatTime = (date: Date | null) => {
+        if (!date) return '-';
+        return new Date(date).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        });
+      };
+
+      return {
+        date: formattedDate,
+        rawDate: record.date,
+        isPresent: record.status === 'PRESENT' || record.status === 'LATE',
+        status: record.status,
+        checkIn: formatTime(record.check_in),
+        checkOut: formatTime(record.check_out),
+        totalHours,
+        hoursValue,
+      };
+    });
+
+    return {
+      message: 'Daily summary retrieved successfully',
+      data: summary,
+    };
+  }
+
+  async getWeeklySummary(userId: string, year: string) {
+    const datePattern = `${year}%`;
+
+    const attendances = await this.attendanceRepo.find({
+      where: {
+        user: { id: userId },
+        date: Like(datePattern),
+      },
+      order: { date: 'ASC' },
+    });
+
+    // Group by week
+    const weeks: {
+      [key: number]: {
+        weekNumber: number;
+        hoursWorked: number;
+        missedDays: number;
+        startDate: Date;
+        endDate: Date;
+      };
+    } = {};
+
+    attendances.forEach((record) => {
+      const date = new Date(record.date);
+      const weekNumber = this.getWeekNumber(date);
+
+      if (!weeks[weekNumber]) {
+        weeks[weekNumber] = {
+          weekNumber,
+          hoursWorked: 0,
+          missedDays: 0,
+          startDate: date, // Initialize with current date, will update
+          endDate: date,
+        };
+      }
+
+      // Update hours
+      if (record.check_in && record.check_out) {
+        const diff =
+          new Date(record.check_out).getTime() -
+          new Date(record.check_in).getTime();
+        weeks[weekNumber].hoursWorked += diff / (1000 * 60 * 60);
+      }
+
+      // Track missed days (simplified logic: if status is ABSENT)
+      if (record.status === 'ABSENT') {
+        weeks[weekNumber].missedDays += 1;
+      }
+      
+      // Update start/end dates for the week range
+      if (date < weeks[weekNumber].startDate) weeks[weekNumber].startDate = date;
+      if (date > weeks[weekNumber].endDate) weeks[weekNumber].endDate = date;
+    });
+
+    // Convert to array and format
+    const summary = Object.values(weeks).map((week) => {
+      return {
+        weekLabel: `Week ${week.weekNumber}`,
+        hoursWorked: Math.round(week.hoursWorked), // Round to nearest hour as per UI
+        missedDays: week.missedDays,
+        from: week.startDate,
+        to: week.endDate,
+      };
+    });
+
+    return {
+      message: 'Weekly summary retrieved successfully',
+      data: summary,
+    };
+  }
+
+  private getWeekNumber(d: Date): number {
+    // Copy date so don't modify original
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    // Get first day of year
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    // Calculate full weeks to nearest Thursday
+    const weekNo = Math.ceil(
+      ((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
+    );
+    return weekNo;
   }
 }

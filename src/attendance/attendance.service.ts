@@ -182,4 +182,13 @@ export class AttendanceService {
   async getActiveBreak(userId: string) {
     return await this.helper.getActiveBreak(userId);
   }
+
+  // Mobile App Summary Methods
+  async getDailySummary(userId: string, month: string, year: string) {
+    return await this.helper.getDailySummary(userId, month, year);
+  }
+
+  async getWeeklySummary(userId: string, year: string) {
+    return await this.helper.getWeeklySummary(userId, year);
+  }
 }
