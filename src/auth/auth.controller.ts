@@ -25,7 +25,6 @@ import { UserProfile } from './interfaces/user-profile.interface';
 import { AssignDepartmentDto } from './dto/assign-department.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/users/user-role.enum';
-import { Exists } from 'src/common/decorators/exists.decorator';
 import { CheckEmailDto } from './dto/check-email.dto';
 
 interface AuthRequest extends Request {
@@ -126,6 +125,6 @@ export class AuthController {
   @Get('welcome')
   welcome(@Req() req: Request, @Res() res: Response) {
     const email = req.query.email as string;
-    res.send(`<h1>Welcome, ${email}</h1>`);
+    res.send(`<h1>Welcome back, ${email}</h1>`);
   }
 }
